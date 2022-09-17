@@ -32,7 +32,7 @@ public class QueueService implements Service {
     /**
      * Метод обработки запроса для режима работы queue.
      * Метод работает так, как указано в описании класса.
-     * Если поле text ответа Resp == null, то метод сообщает, что нет данных.
+     * Если поле text ответа Resp == null, то метод сообщает, что .
      * Если тип запроса не GET и не POST, то приходит ответ о неверном запросе.
      * В случае запроса GET или POST, и наличии корректных данных по нему, метод отправляет строку и ответ 200.
      *
@@ -43,8 +43,8 @@ public class QueueService implements Service {
     public Resp process(Req req) {
         String queueName = req.getSourceName();
         String requestType = req.httpRequestType();
-        Resp result = new Resp("Нет данных", TopicService.NO_CONTENT);
-        if ("queue".equals(req.getPoohMode()) && Objects.nonNull(queueName)) {
+        Resp result = new Resp("", TopicService.NO_CONTENT);
+        if (Objects.nonNull(queueName)) {
             queue.putIfAbsent(queueName, new ConcurrentLinkedQueue<>());
             ConcurrentLinkedQueue<String> linkedQueue = queue.get(queueName);
             String param = req.getParam();

@@ -56,7 +56,7 @@ public class TopicService implements Service {
         String requestType = req.httpRequestType();
         Resp result = new Resp("", NO_CONTENT);
         String param = req.getParam();
-        if (Objects.nonNull(param) && Objects.nonNull(queueName) && "topic".equals(req.getPoohMode())) {
+        if (Objects.nonNull(param) && Objects.nonNull(queueName)) {
             if ("GET".equals(requestType)) {
                 topics.putIfAbsent(param, new ConcurrentHashMap<>());
                 topics.get(param).putIfAbsent(queueName, new ConcurrentLinkedQueue<>());

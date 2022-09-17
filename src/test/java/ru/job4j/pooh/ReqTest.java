@@ -37,6 +37,7 @@ public class ReqTest {
                 + "Host: localhost:9000" + ls
                 + "User-Agent: curl/7.72.0" + ls
                 + "Accept: */*" + ls + ls + ls;
+        System.out.println(content);
         Req req = Req.of(content);
         assertThat(req.httpRequestType(), is("GET"));
         assertThat(req.getPoohMode(), is("queue"));

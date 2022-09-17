@@ -34,7 +34,7 @@ public class QueueServiceTest {
         Resp result = queueService.process(
                 new Req("GET", "queue", "weather", null)
         );
-        assertThat(result.text(), is("Нет данных"));
+        assertThat(result.text(), is(""));
     }
 
     @Test
@@ -45,7 +45,7 @@ public class QueueServiceTest {
         Resp result = queueService.process(
                 new Req("GET", "queue", "weather", null)
         );
-        assertThat(result.text(), is("Нет данных"));
+        assertThat(result.text(), is(""));
     }
 
     @Test
@@ -57,8 +57,8 @@ public class QueueServiceTest {
         Resp result = queueService.process(
                 new Req(null, "queue", "weather", null)
         );
-        assertThat(process.text(), is("Нет данных"));
-        assertThat(result.text(), is("Нет данных"));
+        assertThat(process.text(), is(""));
+        assertThat(result.text(), is(""));
     }
 
     @Test
@@ -70,8 +70,8 @@ public class QueueServiceTest {
         Resp result = queueService.process(
                 new Req("GET", null, "weather", null)
         );
-        assertThat(process.text(), is("Нет данных"));
-        assertThat(result.text(), is("Нет данных"));
+        assertThat(process.text(), is(""));
+        assertThat(result.text(), is(""));
     }
 
     @Test
@@ -84,7 +84,7 @@ public class QueueServiceTest {
                 new Req("GET", "queue", "weather", paramForPostMethod)
         );
         assertThat(process.text(), is("temperature=18"));
-        assertThat(result.text(), is("Нет данных"));
+        assertThat(result.text(), is(""));
     }
 
     @Test
@@ -96,7 +96,7 @@ public class QueueServiceTest {
         Resp result = queueService.process(
                 new Req("GET", "queue", null, paramForPostMethod)
         );
-        assertThat(process.text(), is("Нет данных"));
-        assertThat(result.text(), is("Нет данных"));
+        assertThat(process.text(), is(""));
+        assertThat(result.text(), is(""));
     }
 }
