@@ -78,32 +78,6 @@ public class TopicServiceTest {
     }
 
     @Test
-    public void whenSubscribeAndModeIsNull() {
-        topicService.process(
-                new Req("GET", "topic", "weather", paramForSubscriber1));
-        Resp process = topicService.process(
-                new Req("POST", null, "weather", paramForPublisher)
-        );
-        Resp result2 = topicService.process(
-                new Req("GET", null, "weather", paramForSubscriber1));
-        assertThat(process.text(), is(""));
-        assertThat(result2.text(), is(""));
-    }
-
-    @Test
-    public void whenSubscribeAndModeIsWrong() {
-        topicService.process(
-                new Req("GET", "topic", "weather", paramForSubscriber1));
-        Resp process = topicService.process(
-                new Req("POST", "null", "weather", paramForPublisher)
-        );
-        Resp result2 = topicService.process(
-                new Req("GET", "null", "weather", paramForSubscriber1));
-        assertThat(process.text(), is(""));
-        assertThat(result2.text(), is(""));
-    }
-
-    @Test
     public void whenSubscribeAndSourceIsNull() {
         topicService.process(
                 new Req("GET", "topic", "weather", paramForSubscriber1));

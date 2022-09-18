@@ -1,5 +1,8 @@
 package ru.job4j.pooh;
 
+import org.assertj.core.data.MapEntry;
+
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -38,16 +41,12 @@ public class TopicService implements Service {
 
     public static final String STATUS_OK = "200";
     public static final String NO_CONTENT = "204";
+    public static final String NOT_IMPLEMENTED = "501";
     private final ConcurrentHashMap<String,
             ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> topics = new ConcurrentHashMap<>();
 
-    public static boolean isParam(String param) {
-        return param.contains("=");
-    }
-
-    public static boolean isValid(String reqType, String qMode) {
-        return ("POST".equals(reqType) || "GET".equals(reqType))
-                && ("topic".equals(qMode) || "queue".equals(qMode));
+    public static ConcurrentLinkedQueue<String> emptyQueue() {
+        return new ConcurrentLinkedQueue<>();
     }
 
     @Override
@@ -66,13 +65,16 @@ public class TopicService implements Service {
                 }
             } else if ("POST".equals(requestType)) {
                 if (param.contains("=") && !topics.isEmpty()) {
-                    Stream.of(topics)
-                            .flatMap(map -> map.values().stream())
-                            .filter(map -> map.containsKey(queueName))
-                            .flatMap(map -> map.values().stream())
-                            .forEach(strings -> strings.add(param));
+                    for (Map.Entry<String,
+                            ConcurrentHashMap<String,
+                                    ConcurrentLinkedQueue<String>>> clientsMaps : topics.entrySet()) {
+                        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> linkedQueuesMap = clientsMaps.getValue();
+                        linkedQueuesMap.getOrDefault(queueName, emptyQueue()).add(param);
+                    }
                     result = new Resp(param, STATUS_OK);
                 }
+            } else {
+                result = new Resp("", NOT_IMPLEMENTED);
             }
         }
         return result;

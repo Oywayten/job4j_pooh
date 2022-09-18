@@ -45,17 +45,19 @@ public class QueueService implements Service {
         String requestType = req.httpRequestType();
         Resp result = new Resp("", TopicService.NO_CONTENT);
         if (Objects.nonNull(queueName)) {
-            queue.putIfAbsent(queueName, new ConcurrentLinkedQueue<>());
-            ConcurrentLinkedQueue<String> linkedQueue = queue.get(queueName);
             String param = req.getParam();
             if ("POST".equals(requestType) && Objects.nonNull(param) && param.contains("=")) {
+                queue.putIfAbsent(queueName, new ConcurrentLinkedQueue<>());
+                ConcurrentLinkedQueue<String> linkedQueue = queue.get(queueName);
                 linkedQueue.add(param);
                 result = new Resp(param, TopicService.STATUS_OK);
-            } else {
-                String poll = linkedQueue.poll();
+            } else if ("GET".equals(requestType)) {
+                String poll = queue.getOrDefault(queueName, TopicService.emptyQueue()).poll();
                 if (Objects.nonNull(poll) && Objects.isNull(param)) {
                     result = new Resp(poll, TopicService.STATUS_OK);
                 }
+            } else {
+                result = new Resp("", TopicService.NOT_IMPLEMENTED);
             }
         }
         return result;

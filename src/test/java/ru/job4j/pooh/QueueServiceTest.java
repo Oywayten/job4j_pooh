@@ -23,6 +23,7 @@ public class QueueServiceTest {
                 new Req("GET", "queue", "weather", null)
         );
         assertThat(result.text(), is("temperature=18"));
+        assertThat(result.status(), is("200"));
     }
 
     @Test
@@ -35,6 +36,7 @@ public class QueueServiceTest {
                 new Req("GET", "queue", "weather", null)
         );
         assertThat(result.text(), is(""));
+        assertThat(result.status(), is("204"));
     }
 
     @Test
@@ -46,6 +48,7 @@ public class QueueServiceTest {
                 new Req("GET", "queue", "weather", null)
         );
         assertThat(result.text(), is(""));
+        assertThat(result.status(), is("204"));
     }
 
     @Test
@@ -58,20 +61,9 @@ public class QueueServiceTest {
                 new Req(null, "queue", "weather", null)
         );
         assertThat(process.text(), is(""));
+        assertThat(process.status(), is("501"));
         assertThat(result.text(), is(""));
-    }
-
-    @Test
-    public void whenPostModeIsNull() {
-        String paramForPostMethod = "temperature=18";
-        Resp process = queueService.process(
-                new Req("POST", null, "weather", paramForPostMethod)
-        );
-        Resp result = queueService.process(
-                new Req("GET", null, "weather", null)
-        );
-        assertThat(process.text(), is(""));
-        assertThat(result.text(), is(""));
+        assertThat(result.status(), is("501"));
     }
 
     @Test
