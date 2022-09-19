@@ -39,21 +39,14 @@ import java.util.stream.Stream;
  */
 public class TopicService implements Service {
 
-    public static final String STATUS_OK = "200";
-    public static final String NO_CONTENT = "204";
-    public static final String NOT_IMPLEMENTED = "501";
     private final ConcurrentHashMap<String,
             ConcurrentHashMap<String, ConcurrentLinkedQueue<String>>> topics = new ConcurrentHashMap<>();
-
-    public static ConcurrentLinkedQueue<String> emptyQueue() {
-        return new ConcurrentLinkedQueue<>();
-    }
 
     @Override
     public Resp process(Req req) {
         String queueName = req.getSourceName();
         String requestType = req.httpRequestType();
-        Resp result = new Resp("", NO_CONTENT);
+        Resp result = new Resp("", Assistant.NOT_IMPLEMENTED);
         String param = req.getParam();
         if (Objects.nonNull(param) && Objects.nonNull(queueName)) {
             if ("GET".equals(requestType)) {
@@ -61,21 +54,22 @@ public class TopicService implements Service {
                 topics.get(param).putIfAbsent(queueName, new ConcurrentLinkedQueue<>());
                 String poll = topics.get(param).get(queueName).poll();
                 if (Objects.nonNull(poll)) {
-                    result = new Resp(poll, STATUS_OK);
+                    result = new Resp(poll, Assistant.STATUS_OK);
+                } else {
+                    result = new Resp("", Assistant.NO_CONTENT);
                 }
             } else if ("POST".equals(requestType)) {
-                if (param.contains("=") && !topics.isEmpty()) {
-                    for (Map.Entry<String,
-                            ConcurrentHashMap<String,
-                                    ConcurrentLinkedQueue<String>>> clientsMaps : topics.entrySet()) {
-                        ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> linkedQueuesMap = clientsMaps.getValue();
-                        linkedQueuesMap.getOrDefault(queueName, emptyQueue()).add(param);
+                for (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> topic : topics.values()) {
+                    if (Objects.nonNull(topic)) {
+                        for (ConcurrentLinkedQueue<String> queue : topic.values()) {
+                            queue.add(param);
+                        }
                     }
-                    result = new Resp(param, STATUS_OK);
                 }
-            } else {
-                result = new Resp("", NOT_IMPLEMENTED);
+                result = new Resp(param, Assistant.STATUS_OK);
             }
+        } else {
+            result = new Resp("", Assistant.BAD_REQUEST);
         }
         return result;
     }

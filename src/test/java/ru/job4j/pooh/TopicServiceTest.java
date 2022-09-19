@@ -47,8 +47,10 @@ public class TopicServiceTest {
         );
         Resp result2 = topicService.process(
                 new Req("GET", "topic", "weather", paramForSubscriber1));
-        assertThat(result1.text(), is(""));
-        assertThat(result2.text(), is(""));
+        assertThat(result1.text(), is("client407"));
+        assertThat(result1.status(), is("200"));
+        assertThat(result2.text(), is("client407"));
+        assertThat(result2.status(), is("200"));
     }
 
     @Test
@@ -87,7 +89,9 @@ public class TopicServiceTest {
         Resp result2 = topicService.process(
                 new Req("GET", "null", null, paramForSubscriber1));
         assertThat(process.text(), is(""));
+        assertThat(process.status(), is("400"));
         assertThat(result2.text(), is(""));
+        assertThat(result2.status(), is("400"));
     }
 
 
@@ -101,7 +105,9 @@ public class TopicServiceTest {
         Resp result2 = topicService.process(
                 new Req("GET", "topic", "weather", paramForSubscriber1));
         assertThat(process.text(), is(""));
+        assertThat(process.status(), is("400"));
         assertThat(result2.text(), is(""));
+        assertThat(result2.status(), is("204"));
     }
 
     @Test
@@ -116,6 +122,8 @@ public class TopicServiceTest {
         Resp result2 = topicService.process(
                 new Req("GET", "topic", "weather", paramForSubscriber1));
         assertThat(result1.text(), is("temperature=18"));
+        assertThat(result1.status(), is("200"));
         assertThat(result2.text(), is(""));
+        assertThat(result2.status(), is("204"));
     }
 }

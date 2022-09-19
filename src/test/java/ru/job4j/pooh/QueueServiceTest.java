@@ -41,12 +41,14 @@ public class QueueServiceTest {
 
     @Test
     public void whenPostParamNull() {
-        queueService.process(
+        Resp process = queueService.process(
                 new Req("POST", "queue", "weather", null)
         );
         Resp result = queueService.process(
                 new Req("GET", "queue", "weather", null)
         );
+        assertThat(process.text(), is(""));
+        assertThat(process.status(), is("400"));
         assertThat(result.text(), is(""));
         assertThat(result.status(), is("204"));
     }
@@ -61,9 +63,9 @@ public class QueueServiceTest {
                 new Req(null, "queue", "weather", null)
         );
         assertThat(process.text(), is(""));
-        assertThat(process.status(), is("501"));
+        assertThat(process.status(), is("400"));
         assertThat(result.text(), is(""));
-        assertThat(result.status(), is("501"));
+        assertThat(result.status(), is("400"));
     }
 
     @Test

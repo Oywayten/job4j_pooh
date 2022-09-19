@@ -43,23 +43,45 @@ public class QueueService implements Service {
     public Resp process(Req req) {
         String queueName = req.getSourceName();
         String requestType = req.httpRequestType();
-        Resp result = new Resp("", TopicService.NO_CONTENT);
-        if (Objects.nonNull(queueName)) {
+        Resp result = new Resp("", Assistant.NOT_IMPLEMENTED);
+        if (isValid(req)) {
             String param = req.getParam();
-            if ("POST".equals(requestType) && Objects.nonNull(param) && param.contains("=")) {
+            if ("POST".equals(requestType)) {
                 queue.putIfAbsent(queueName, new ConcurrentLinkedQueue<>());
-                ConcurrentLinkedQueue<String> linkedQueue = queue.get(queueName);
-                linkedQueue.add(param);
-                result = new Resp(param, TopicService.STATUS_OK);
+                queue.get(queueName).add(param);
+                result = new Resp(param, Assistant.STATUS_OK);
             } else if ("GET".equals(requestType)) {
-                String poll = queue.getOrDefault(queueName, TopicService.emptyQueue()).poll();
-                if (Objects.nonNull(poll) && Objects.isNull(param)) {
-                    result = new Resp(poll, TopicService.STATUS_OK);
+                String poll = queue.getOrDefault(queueName, new ConcurrentLinkedQueue<>()).poll();
+                if (Objects.isNull(poll)) {
+                    result = new Resp("", Assistant.NO_CONTENT);
+                } else {
+                    result = new Resp(poll, Assistant.STATUS_OK);
                 }
-            } else {
-                result = new Resp("", TopicService.NOT_IMPLEMENTED);
             }
+        } else {
+            result = new Resp("", Assistant.BAD_REQUEST);
         }
         return result;
+    }
+
+    public boolean isValid(Req req) {
+        String queueName = req.getSourceName();
+        String requestType = req.httpRequestType();
+        boolean isValid = false;
+        if (Objects.nonNull(queueName) && Objects.nonNull(requestType)) {
+            String param = req.getParam();
+            if ("POST".equals(requestType)) {
+                if (Objects.nonNull(param) && param.contains("=")) {
+                    isValid = true;
+                }
+            } else if ("GET".equals(requestType)) {
+                if (Objects.isNull(param)) {
+                    isValid = true;
+                }
+            } else {
+                isValid = true;
+            }
+        }
+        return isValid;
     }
 }
