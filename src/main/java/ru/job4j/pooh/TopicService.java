@@ -50,20 +50,19 @@ public class TopicService implements Service {
         String param = req.getParam();
         if (Objects.nonNull(param) && Objects.nonNull(queueName)) {
             if ("GET".equals(requestType)) {
-                topics.putIfAbsent(param, new ConcurrentHashMap<>());
-                topics.get(param).putIfAbsent(queueName, new ConcurrentLinkedQueue<>());
-                String poll = topics.get(param).get(queueName).poll();
+                topics.putIfAbsent(queueName, new ConcurrentHashMap<>());
+                topics.get(queueName).putIfAbsent(param, new ConcurrentLinkedQueue<>());
+                String poll = topics.get(queueName).get(param).poll();
                 if (Objects.nonNull(poll)) {
                     result = new Resp(poll, Assistant.STATUS_OK);
                 } else {
                     result = new Resp("", Assistant.NO_CONTENT);
                 }
             } else if ("POST".equals(requestType)) {
-                for (ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> topic : topics.values()) {
-                    if (Objects.nonNull(topic)) {
-                        for (ConcurrentLinkedQueue<String> queue : topic.values()) {
-                            queue.add(param);
-                        }
+                ConcurrentHashMap<String, ConcurrentLinkedQueue<String>> topic = this.topics.get(queueName);
+                if (Objects.nonNull(topic)) {
+                    for (ConcurrentLinkedQueue<String> linkedQueue : topic.values()) {
+                        linkedQueue.add(param);
                     }
                 }
                 result = new Resp(param, Assistant.STATUS_OK);
