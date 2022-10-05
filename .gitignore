@@ -37,3 +37,5 @@ hs_err_pid*
 /templates.txt
 /src/site/site.xml
 /job4j_pooh.iml
+/src/main/java/ru/job4j/html/example.html
+/src/main/java/ru/job4j/html/img.png
